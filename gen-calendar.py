@@ -3,35 +3,70 @@ import sys
 import xml.dom
 from datetime import date, timedelta
 
-year=2011
-daysInYear = (date(year + 1, 1, 1) - date(year, 1, 1)).days
-
-center=('50%', '50%')
-
-innerRadius0 = 570
-outerRadius0 = 670
-
-innerRadius1 = 700
-outerRadius1 = 800
-
 # Proportion p of the way from x1 to x2.
 def interp(x1, x2, p): return x1 + p * (x2 - x1)
 
-# Spiral coordinates are:
-# - an angle a, from 0 to 1, top to top clockwise; and
-# - a radius r, from 0 (inner edge) to 1 (outer edge).
+class Spiral(object):
+    def __init__(self, center, startDate, nextDate, radius0, radius1, thickness):
+        self.center = center
+        self.start = startDate
+        self.next = endDate
+        self.days = (self.next - self.start).days
+        self.radius0 = radius0
+        self.radius1 = radius1
+        self.thickness = thickness
 
-# Return the length of the radius for (a, r).
-def radius(a, r):
-    inner = interp(innerRadius0, innerRadius1, a)
-    outer = interp(outerRadius0, outerRadius1, a)
-    return interp(inner, outer, r)
+    # Return the angle corresponding to |date|, in radians.
+    def dateToProportion(self, date):
+        return float((date - self.startYear).days) / self.days
 
-# Convert (a, r) to cartesian coordinates.
-def spiral(a, r):
-    r = radius(a, r)
-    return (1728/2 + math.sin(2*math.pi * a) * r,
-            1728/2 - math.cos(2*math.pi * a) * r)
+    # Return the radius in pixels corresponding to |radius|, where 0 to 1
+    # means inner to outer radius.
+    def pixelRadius(self, date, radius):
+        p = self.dateToProportion(date)
+        return interp(self.radius0, self.radius1, p) + interp(0, self.thickness, radius)
+
+    # Return the (x,y) coordinates of the point corresponding to |date|, at
+    # |radius|, where a |radius| of zero means the inner edge, and a
+    # |radius| of one means the outer edge.
+    def toXY(self, date, radius):
+        p = self.dateToProportion(date)
+        pixelRadius = self.pixelRadius(date, radius)
+        (cx, cy) = self.center
+        return (cx + math.sin(p * 2*math.pi) * pixelRadius,
+                cy - math.cos(p * 2.math.pi) * pixelRadius)
+
+    # A path command for a spiral segment from date1 to date2, at radius r.
+    # This assumes that the current path position is spiral.toXY(date1, r).
+    # Command ends with a space.
+    def segment(self, date1, date2, r):
+        # Return a circle segment, starting and ending at the right place, and
+        # with a radius halfway between our start and end radii. This is kind
+        # of a punt, since spiral segments are not circle segments, but it
+        # doesn't look too bad as long as the radius is big enough.
+        midSegment = date1 + (date2 - date1) / 2
+        rpx = self.pixelRadius(midSegment, r)
+        return ("A %d %d 0 0 %d %d %d "
+                % ((rpx, rpx, (1 if date2 > date1 else 0))
+                   + self.toXY(date2, r)))
+
+    # A section from date d1 to d2, and radius r1 to r2.
+    def section(self, d1, d2, r1, r2):
+        d =  ("M %d %d " % self.toXY(d1, r1)
+              + self.segment(d1, d2, r1)
+              + "L %d %d " % self.toXY(d2, r2)
+              + self.segment(d2, d1, r2)
+              + "Z")
+        s = doc.createElement('path')
+        s.setAttribute('d', d)
+        return s
+
+
+
+year=2011
+spiral = Spiral((1728/2, 1728/2),
+                date(year, 1, 1), date(year + 1, 1, 1),
+                570, 700, 100)
 
 def setAttributesByDict(element, d):
     for (key, value) in d.items():
@@ -42,29 +77,7 @@ def line((x1, y1), (x2, y2)):
     setAttributesByDict(l, { 'x1':x1, 'y1':y1, 'x2':x2, 'y2':y2 })
     return l
 
-# A path command for a spiral segment from a1 to a2, at radius r, This
-# assumes that the current path position is spiral(a1, r). Command ends
-# with a space.
-def spiralSegment(a1, a2, r):
-    # Return a circle segment, starting and ending at the right place, and
-    # with a radius halfway between our start and end radii. This is kind
-    # of a punt, since spiral segments are not circle segments, but it
-    # doesn't look too bad as long as the radius is big enough.
-    rpx = radius((a1+a2)/2, r)
-    return ("A %d %d 0 0 %d %d %d "
-            % ((rpx, rpx, (1 if a2 > a1 else 0))
-               + spiral(a2, r)))
 
-# A section from angle a1 to a2, and radius r1 to r2.
-def section(a1, a2, r1, r2):
-    d =  ("M %d %d " % spiral(a1, r1)
-          + spiralSegment(a1, a2, r1)
-          + "L %d %d " % spiral(a2, r2)
-          + spiralSegment(a2, a1, r2)
-          + "Z")
-    s = doc.createElement('path')
-    s.setAttribute('d', d)
-    return s
 
 impl = xml.dom.getDOMImplementation()
 doc = impl.createDocument('http://www.w3.org/2000/svg', 'svg',
