@@ -124,22 +124,22 @@ class Spiral(object):
         # Could we do better with a spline?
         midSegment = date1 + (date2 - date1) / 2
         rpx = self.pixelRadius(midSegment, r)
-        return ("A %d %d 0 0 %d %d %d "
+        return ("A %.1f %.1f 0 0 %d %.1f %.1f "
                 % ((rpx, rpx, (1 if date2 > date1 else 0))
                    + self.toXY(date2, r)))
 
     # A path command for a section from date d1 to d2, and radius r1 to r2.
     def section(self, date1, date2, r1, r2):
-        return ("M %d %d " % self.toXY(date1, r1)
+        return ("M %.1f %.1f " % self.toXY(date1, r1)
                 + self.segment(date1, date2, r1)
-                + "L %d %d " % self.toXY(date2, r2)
+                + "L %.1f %.1f " % self.toXY(date2, r2)
                 + self.segment(date2, date1, r2)
                 + "Z")
 
     # A path command for a line radiating out from the center at date d,
     # starting at radius r1, and ending at radius r2.
     def radial(self, d, r1, r2):
-        return "M %d %d L %d %d " % (self.toXY(d, r1) + self.toXY(d, r2))
+        return "M %.1f %.1f L %.1f %.1f " % (self.toXY(d, r1) + self.toXY(d, r2))
 
 class Calendar(object):
     def __init__(self, picture, spiral, startDate, endDate):
@@ -157,7 +157,7 @@ class Calendar(object):
         def spiral(r):
             dates = dateRange(self.startDate, self.endDate, 10)
             prev = dates.next()
-            d = "M %d %d " % self.spiral.toXY(prev, r)
+            d = "M %.1f %.1f " % self.spiral.toXY(prev, r)
             for t in dates:
                 d = d + self.spiral.segment(prev, t, r)
                 prev = t
@@ -181,21 +181,22 @@ class Calendar(object):
         return f
 
 # The whole picture.
-picture = SVGPicture(('24in', '24in'), (1728, 1728))
+picture = SVGPicture(('8.5in', '11in'), (1728, 2236))
 
 # Background.
-picture.root.appendChild(picture.rect((0, 0), (1728, 1728), fill='white', stroke='none'))
+picture.root.appendChild(picture.rect((0, 0), (1728, 2236), fill='white', stroke='none'))
 
 # Madoka's calendar.
+center = (1728/2, 2236/2)
 Calendar(picture,
-         Spiral(center=(1728/2, 1728/2),
+         Spiral(center=center,
                 topDate = date(2012,1,1), nextTopDate = date(2013,1,1),
                 topRadius = 700, nextTopRadius = 750, thickness = 20),
          date(2002,6,24), date(2013,1,1)).draw()
 
 # Mika's calendar.
 Calendar(picture,
-         Spiral(center=(1728/2, 1728/2),
+         Spiral(center=center,
                 topDate = date(2012,1,1), nextTopDate = date(2013,1,1),
                 topRadius = 725, nextTopRadius = 775, thickness = 20),
          date(2005,9,18), date(2013,1,1)).draw()
