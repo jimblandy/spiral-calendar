@@ -180,14 +180,18 @@ class Calendar(object):
 
         return f
 
+# Dimensions of the page, in inches
+pageSizeInches = ('24in', '24in')
+pageSize = (1728, 1728)
+center = (pageSize[0]/2, pageSize[1]/2)
+
 # The whole picture.
-picture = SVGPicture(('8.5in', '11in'), (1728, 2236))
+picture = SVGPicture(pageSizeInches, pageSize)
 
 # Background.
-picture.root.appendChild(picture.rect((0, 0), (1728, 2236), fill='white', stroke='none'))
+picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='none'))
 
 # Madoka's calendar.
-center = (1728/2, 2236/2)
 Calendar(picture,
          Spiral(center=center,
                 topDate = date(2012,1,1), nextTopDate = date(2013,1,1),
