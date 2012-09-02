@@ -191,19 +191,16 @@ picture = SVGPicture(pageSizeInches, pageSize)
 # Background.
 picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='none'))
 
-# Madoka's calendar.
+year = 2012
+topDate = date(year,1,1)
+yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
+startDate = date(year-1, 12, 1)
+endDate =   date(year+1, 1, 31)
 Calendar(picture,
          Spiral(center=center,
-                topDate = date(2012,1,1), nextTopDate = date(2013,1,1),
-                topRadius = 700, nextTopRadius = 750, thickness = 20),
-         date(2002,6,24), date(2013,1,1)).draw()
-
-# Mika's calendar.
-Calendar(picture,
-         Spiral(center=center,
-                topDate = date(2012,1,1), nextTopDate = date(2013,1,1),
-                topRadius = 725, nextTopRadius = 775, thickness = 20),
-         date(2005,9,18), date(2013,1,1)).draw()
+                topDate = topDate, nextTopDate = topDate + yearLength,
+                topRadius = 600, nextTopRadius = 725, thickness = 70),
+         startDate, endDate).draw()
 
 with open('calendar.svg', 'w') as f:
     picture.doc.writexml(f, addindent='  ', newl='\n')
