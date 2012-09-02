@@ -148,8 +148,8 @@ class Calendar(object):
         self.startDate = startDate
         self.endDate = endDate
 
-    def draw(self):
-        self.picture.root.appendChild(self.frame())
+    def element(self):
+        return self.frame()
 
     # The "frame": spirals, day lines.
     def frame(self):
@@ -174,9 +174,10 @@ class Calendar(object):
         # Day/week lines.
         for d in dateRange(self.startDate, self.endDate, 1):
             if d.weekday():
-                f.appendChild(self.picture.path(self.spiral.radial(d, 0.4, 0.6)))
+                p = self.picture.path(self.spiral.radial(d, 0.4, 0.6))
             else:
-                f.appendChild(self.picture.path(self.spiral.radial(d, 0.0, 1.0)))
+                p = self.picture.path(self.spiral.radial(d, 0.0, 1.0))
+            f.appendChild(p)
 
         return f
 
@@ -196,11 +197,12 @@ topDate = date(year,1,1)
 yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
 startDate = date(year-1, 12, 1)
 endDate =   date(year+1, 1, 31)
-Calendar(picture,
-         Spiral(center=center,
-                topDate = topDate, nextTopDate = topDate + yearLength,
-                topRadius = 600, nextTopRadius = 725, thickness = 70),
-         startDate, endDate).draw()
+picture.root.appendChild(Calendar(picture,
+                                  Spiral(center=center,
+                                         topDate = topDate, nextTopDate = topDate + yearLength,
+                                         topRadius = 600, nextTopRadius = 725, thickness = 70),
+                                  startDate, endDate)
+                         .element());
 
 with open('calendar.svg', 'w') as f:
     picture.doc.writexml(f, addindent='  ', newl='\n')
