@@ -31,6 +31,7 @@ class SVGPicture(object):
         self.doc = impl.createDocument('http://www.w3.org/2000/svg', 'svg', doctype)
         self.root = self.doc.documentElement
         self.root.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+        self.root.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
         self.root.setAttribute('version', '1.1')
         self.root.setAttribute('width', realWidth)
         self.root.setAttribute('height', realHeight)
@@ -50,6 +51,22 @@ class SVGPicture(object):
     def path(self, d, **attributes):
         attributes['d'] = d
         return setAttributes(self.doc.createElement('path'), **attributes)
+
+    def textPath(self, content, **attributes):
+        tp = self.doc.createElement('textPath')
+        tp.appendChild(self.doc.createTextNode(str(content)))
+        setAttributes(tp, **attributes)
+        return tp
+
+    def text(self, content=None, **attributes):
+        t = self.doc.createElement('text')
+        if content:
+            t.appendChild(self.doc.createTextNode(str(content)))
+        setAttributes(t, **attributes)
+        return t
+
+    def defs(self):
+        return self.doc.createElement('defs')
 
 # A coordinate transformation, taking dates and radii to cartesian points on a spiral.
 #
@@ -161,6 +178,7 @@ class Calendar(object):
     def element(self):
         g = self.picture.group()
         g.appendChild(self.monthSections())
+        g.appendChild(self.monthLabels())
         g.appendChild(self.frame())
         return g
 
@@ -189,9 +207,42 @@ class Calendar(object):
         gray=True
         for (sectionStart, sectionEnd) in Calendar.months(self.startDate, self.endDate):
             p = self.picture.path(self.spiral.section(sectionStart, sectionEnd, 0, 1))
-            setAttributes(p, stroke='none', fill='rgb(220,220,220)' if gray else 'white')
+            setAttributes(p, stroke='none', fill='rgb(230,230,230)' if gray else 'white')
             g.appendChild(p)
             gray = not gray
+        return g
+
+    # Labels for the months.
+    def monthLabels(self):
+        g = self.picture.group(fill='rgb(190,190,190)')
+
+        def monthId(date, prefix=""):
+            return "%s%d-%d" % (prefix, date.year, date.month)
+
+        # Create paths for each month's label to follow.
+        d = self.picture.defs()
+        for (start, end) in Calendar.months(self.startDate, self.endDate):
+            # Stretch out the interval to cover the whole month's span. Use
+            # day numbers acceptable in all months.
+            start = start.replace(day=5)
+            end = end.replace(day=29)
+            p = self.picture.path(self.spiral.moveTo(start, 1.2)
+                                  + self.spiral.segment(start, end, 1.2),
+                                  id=monthId(start), stroke='black', fill='none')
+            p.setAttribute('stroke-width', '4')
+            d.appendChild(p)
+
+        g.appendChild(d)
+
+        # Create the month labels.
+        for (start, end) in Calendar.months(self.startDate, self.endDate):
+            tp = self.picture.textPath(start.strftime("%B"))
+            tp.setAttribute('xlink:href', monthId(start, "#"))
+            t = self.picture.text(None)
+            t.setAttribute('font-size', "48")
+            t.appendChild(tp)
+            g.appendChild(t)
+
         return g
 
     # The "frame": spirals, day lines.
@@ -245,7 +296,7 @@ endDate =   date(year+1, 1, 31)
 picture.root.appendChild(Calendar(picture,
                                   Spiral(center=center,
                                          topDate = topDate, nextTopDate = topDate + yearLength,
-                                         topRadius = 600, nextTopRadius = 725, thickness = 70),
+                                         topRadius = 550, nextTopRadius = 675, thickness = 70),
                                   startDate, endDate)
                          .element());
 
