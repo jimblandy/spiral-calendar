@@ -150,33 +150,38 @@ class Calendar(object):
 
     def element(self):
         g = self.picture.group()
-        g.appendChild(self.weekSections())
+        g.appendChild(self.monthSections())
         g.appendChild(self.frame())
         return g
 
-    # Draw the alternating gray and white backgrounds for the weeks, going
-    # from Monday to Monday.
-    def weekSections(self):
+    # Return the start of the next month after |date|.
+    @classmethod
+    def nextMonth(self, date):
+        if date.month < 12:
+            return date.replace(month=date.month + 1)
+        else:
+            return date.replace(year=date.year + 1, month=1)
 
-        # Yield pairs of the week section start and end dates we need to
-        # draw to cover the range |start| (inclusive), |end| (exclusive).
-        # Weeks start on Mondays.
-        def weekExtents(start, end):
-            d = start
-            while d < end:
-                day = d.weekday()
-                nextMonday = d + timedelta(7 - day)
-                yield (d, min(nextMonday, end))
-                # We're yielding a section for every other week, so the
-                # next section starts two weeks after this section's week
-                # started.
-                d = d - timedelta(day) + timedelta(14)
+    # Yield (start, end) pairs for each month that overlaps the period
+    # starting at |start| and ending at |end|. Clip the pairs to lie within
+    # |start|..|end|.
+    @classmethod
+    def months(self, start, end):
+        d = start
+        while d < end:
+            n = Calendar.nextMonth(d)
+            yield(d, min(n, end))
+            d = n
 
+    # Draw alternating gray and white backgrounds for the months.
+    def monthSections(self):
         g = self.picture.group()
-        setAttributes(g, stroke='none', fill='rgb(220,220,220)')
-        for (sectionStart, sectionEnd) in weekExtents(self.startDate, self.endDate):
+        gray=True
+        for (sectionStart, sectionEnd) in Calendar.months(self.startDate, self.endDate):
             p = self.picture.path(self.spiral.section(sectionStart, sectionEnd, 0, 1))
+            setAttributes(p, stroke='none', fill='rgb(220,220,220)' if gray else 'white')
             g.appendChild(p)
+            gray = not gray
         return g
 
     # The "frame": spirals, day lines.
