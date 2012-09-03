@@ -113,9 +113,19 @@ class Spiral(object):
         return (cx + math.sin(p * 2*math.pi) * pixelRadius,
                 cy - math.cos(p * 2*math.pi) * pixelRadius)
 
+    # A path command to move to |date|, |radius|. The command has no
+    # trailing or leading spaces.
+    def moveTo(self, date, radius):
+        return "M %.1f %.1f" % self.toXY(date, radius)
+
+    # A path command to draw a straight line from the current position to
+    # |date|, |radius|. The command starts with a space.
+    def lineTo(self, date, radius):
+        return " L %.1f %.1f" % self.toXY(date, radius)
+
     # A path command for a spiral segment from date1 to date2, at radius r.
     # This assumes that the current path position is spiral.toXY(date1, r).
-    # Command ends with a space.
+    # The command begins with a space.
     def segment(self, date1, date2, r):
         # Return a circle segment, starting and ending at the right place,
         # and with a radius halfway between our start and end radii. This
@@ -124,22 +134,22 @@ class Spiral(object):
         # Could we do better with a spline?
         midSegment = date1 + (date2 - date1) / 2
         rpx = self.pixelRadius(midSegment, r)
-        return ("A %.1f %.1f 0 0 %d %.1f %.1f "
+        return (" A %.1f %.1f 0 0 %d %.1f %.1f"
                 % ((rpx, rpx, (1 if date2 > date1 else 0))
                    + self.toXY(date2, r)))
 
     # A path command for a section from date d1 to d2, and radius r1 to r2.
     def section(self, date1, date2, r1, r2):
-        return ("M %.1f %.1f " % self.toXY(date1, r1)
+        return (self.moveTo(date1, r1)
                 + self.segment(date1, date2, r1)
-                + "L %.1f %.1f " % self.toXY(date2, r2)
+                + self.lineTo(date2, r2)
                 + self.segment(date2, date1, r2)
-                + "Z")
+                + " Z")
 
     # A path command for a line radiating out from the center at date d,
     # starting at radius r1, and ending at radius r2.
     def radial(self, d, r1, r2):
-        return "M %.1f %.1f L %.1f %.1f " % (self.toXY(d, r1) + self.toXY(d, r2))
+        return self.moveTo(d, r1) + self.lineTo(d, r2)
 
 class Calendar(object):
     def __init__(self, picture, spiral, startDate, endDate):
@@ -190,7 +200,7 @@ class Calendar(object):
         def spiral(r):
             dates = dateRange(self.startDate, self.endDate, 10)
             prev = dates.next()
-            d = "M %.1f %.1f " % self.spiral.toXY(prev, r)
+            d = self.spiral.moveTo(prev, r)
             for t in dates:
                 d = d + self.spiral.segment(prev, t, r)
                 prev = t
