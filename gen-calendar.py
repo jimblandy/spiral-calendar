@@ -149,7 +149,35 @@ class Calendar(object):
         self.endDate = endDate
 
     def element(self):
-        return self.frame()
+        g = self.picture.group()
+        g.appendChild(self.weekSections())
+        g.appendChild(self.frame())
+        return g
+
+    # Draw the alternating gray and white backgrounds for the weeks, going
+    # from Monday to Monday.
+    def weekSections(self):
+
+        # Yield pairs of the week section start and end dates we need to
+        # draw to cover the range |start| (inclusive), |end| (exclusive).
+        # Weeks start on Mondays.
+        def weekExtents(start, end):
+            d = start
+            while d < end:
+                day = d.weekday()
+                nextMonday = d + timedelta(7 - day)
+                yield (d, min(nextMonday, end))
+                # We're yielding a section for every other week, so the
+                # next section starts two weeks after this section's week
+                # started.
+                d = d - timedelta(day) + timedelta(14)
+
+        g = self.picture.group()
+        setAttributes(g, stroke='none', fill='rgb(220,220,220)')
+        for (sectionStart, sectionEnd) in weekExtents(self.startDate, self.endDate):
+            p = self.picture.path(self.spiral.section(sectionStart, sectionEnd, 0, 1))
+            g.appendChild(p)
+        return g
 
     # The "frame": spirals, day lines.
     def frame(self):
@@ -177,6 +205,8 @@ class Calendar(object):
                 p = self.picture.path(self.spiral.radial(d, 0.4, 0.6))
             else:
                 p = self.picture.path(self.spiral.radial(d, 0.0, 1.0))
+            if d == date.today():
+                p.setAttribute('stroke-width', '4')
             f.appendChild(p)
 
         return f
