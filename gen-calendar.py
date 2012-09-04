@@ -1,7 +1,7 @@
 import math
 import sys
 import xml.dom
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 # Proportion p of the way from x1 to x2, where p=0 yields x1, and p=1 yields x2.
 def interp(x1, x2, p): return x1 + p * (x2 - x1)
@@ -15,6 +15,15 @@ def dateRange(start, end, step):
         yield start
         start = start + step
     yield end
+
+def toDatetime(d):
+    if isinstance(d, datetime):
+        return d
+    else:
+        return datetime(d.year, d.month, d.day)
+
+def toFractionalDays(delta):
+    return delta.days + float(delta.seconds) / (24 * 60 * 60)
 
 def setAttributes(element, **d):
     for (key, value) in d.items():
@@ -115,7 +124,7 @@ class Spiral(object):
     # Return the angle corresponding to |date|, in revolutions (1 means one
     # full circuit around the spiral).
     def dateToProportion(self, date):
-        return float((date - self.top).days) / self.circumDays
+        return toFractionalDays(toDatetime(date) - toDatetime(self.top)) / self.circumDays
 
     # Return the distance from the center of the point |date|, |radius|.
     def pixelRadius(self, date, radius):
@@ -215,9 +224,10 @@ class Calendar(object):
     # Labels for the months.
     def monthLabels(self):
         g = self.picture.group(fill='rgb(190,190,190)')
+        g.setAttribute('font-size', "40")
 
         def monthId(date, prefix=""):
-            return "%s%d-%d" % (prefix, date.year, date.month)
+            return "%smonth-%d-%d" % (prefix, date.year, date.month)
 
         # Create paths for each month's label to follow.
         d = self.picture.defs()
@@ -226,6 +236,8 @@ class Calendar(object):
             # day numbers acceptable in all months.
             start = start.replace(day=5)
             end = end.replace(day=29)
+            # Give these lines stroke and stroke width, even though they're
+            # in a 'defs'; we occasionally like to see them for debugging.
             p = self.picture.path(self.spiral.moveTo(start, 1.2)
                                   + self.spiral.segment(start, end, 1.2),
                                   id=monthId(start), stroke='black', fill='none')
@@ -236,16 +248,16 @@ class Calendar(object):
 
         # Create the month labels.
         for (start, end) in Calendar.months(self.startDate, self.endDate):
-            tp = self.picture.textPath(start.strftime("%B"))
+            text = start.strftime("%B %Y" if start.month == 1 else "%B")
+            tp = self.picture.textPath(text)
             tp.setAttribute('xlink:href', monthId(start, "#"))
             t = self.picture.text(None)
-            t.setAttribute('font-size', "48")
             t.appendChild(tp)
             g.appendChild(t)
 
         return g
 
-    # The "frame": spirals, day lines.
+    # The "frame": spirals, day lines, Monday dates
     def frame(self):
 
         def spiral(r):
@@ -257,6 +269,10 @@ class Calendar(object):
                 prev = t
             return self.picture.path(d)
 
+        def weekId(date, prefix=""):
+            iso = date.isocalendar()
+            return "%sweek-%d-%d" % (prefix, iso[0], iso[1])
+
         f = picture.group()
         f.setAttribute('fill', 'none')
         f.setAttribute('stroke', 'black')
@@ -264,6 +280,10 @@ class Calendar(object):
 
         f.appendChild(spiral(0))        # inner spiral edge
         f.appendChild(spiral(1))        # outer spiral edge
+
+        # A defs element, to hold the paths for the Monday date labels.
+        ld = self.picture.defs()
+        f.appendChild(ld)
 
         # Day/week lines.
         for d in dateRange(self.startDate, self.endDate, 1):
@@ -274,6 +294,22 @@ class Calendar(object):
             if d == date.today():
                 p.setAttribute('stroke-width', '4')
             f.appendChild(p)
+
+            # If this day is a Monday, label its day within the month.
+            if d.weekday() == 0:
+                # Create a path for the label to follow. (Convert to
+                # datetime, so we can space in by fractional days.)
+                labelStart = toDatetime(d) + timedelta(0.3)
+                i = (self.spiral.moveTo(labelStart, .8)
+                     + self.spiral.section(labelStart, labelStart + timedelta(7), .8, .8))
+                lp = self.picture.path(i, id=weekId(d))
+                ld.appendChild(lp)
+                # Create a day-of-month label, on that path.
+                tp = self.picture.textPath(" %d" % (d.day,))
+                tp.setAttribute('xlink:href', weekId(d, '#'))
+                t = self.picture.text(None)
+                t.appendChild(tp)
+                f.appendChild(t)
 
         return f
 
