@@ -235,7 +235,7 @@ class Calendar(object):
             # Stretch out the interval to cover the whole month's span. Use
             # day numbers acceptable in all months.
             start = start.replace(day=5)
-            end = end.replace(day=29)
+            end = end.replace(day=28)
             # Give these lines stroke and stroke width, even though they're
             # in a 'defs'; we occasionally like to see them for debugging.
             p = self.picture.path(self.spiral.moveTo(start, 1.2)
@@ -324,11 +324,11 @@ picture = SVGPicture(pageSizeInches, pageSize)
 # Background.
 picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='none'))
 
-year = 2012
+year = 2013
 topDate = date(year,1,1)
 yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
-startDate = date(year-1, 12, 1)
-endDate =   date(year+1, 1, 31)
+startDate = date(2012, 8, 27)
+endDate =   date(2013, 9, 2)
 picture.root.appendChild(Calendar(picture,
                                   Spiral(center=center,
                                          topDate = topDate, nextTopDate = topDate + yearLength,
