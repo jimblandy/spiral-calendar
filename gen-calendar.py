@@ -30,6 +30,35 @@ def setAttributes(element, **d):
         element.setAttribute(key, str(value))
     return element
 
+# What proportion of the day is the sun up on |date| at |latitude|? A
+# result of 0 means the sun never rises; a result of 1 means the sun is up
+# all day long. |latitude| is in degrees.
+def dayLength(date, latitude):
+    # Formulas from: http://www.gandraxa.com/length_of_day.xml
+    # I don't really understand them, and the numbers don't quite match
+    # what I get from calendar sites. Perhaps this is measuring the exact
+    # moment the center of the sun goes down, as opposed to civil twilight?
+    # But I think it's close enough to get the idea across.
+
+    # Tilt of earth's axis relative to its orbital plane ("obliquity of ecliptic")
+    axis = math.radians(23.439)
+
+    # Date of winter solstice in this year. Not quite right, but good
+    # enough for our purposes.
+    solstice = date.replace(month=12, day=21)
+
+    # If a year is a full circle, this is the angle between the solstice
+    # and this date, in radians. May be negative if we haven't reached the
+    # solstice yet.
+    dateAngle = (date - solstice).days * 2 * math.pi / 365.25
+
+    latitude = math.radians(latitude)
+    m = 1 - math.tan(latitude) * math.tan(axis * math.cos(dateAngle))
+
+    # If m is less than zero, the sun never rises; if greater than two, it never sets.
+    m = min(2, max(0, m))
+    return math.acos(1 - m) / math.pi
+
 # Bookkeeping helpers for an SVG XML document. self.root is an xml.dom
 # document element in the document self.doc.
 class SVGPicture(object):
@@ -178,11 +207,12 @@ class Spiral(object):
         return self.moveTo(d, r1) + self.lineTo(d, r2)
 
 class Calendar(object):
-    def __init__(self, picture, spiral, startDate, endDate):
+    def __init__(self, picture, spiral, startDate, endDate, latitude):
         self.picture = picture
         self.spiral = spiral
         self.startDate = startDate
         self.endDate = endDate
+        self.latitude = latitude
         self.nextId = 0
 
     def element(self):
@@ -303,11 +333,12 @@ class Calendar(object):
         # Day/week lines.
         for d in dateRange(self.startDate, self.endDate, 1):
             if d.weekday():
-                p = self.picture.path(self.spiral.radial(d, 0.4, 0.6))
+                l = dayLength(d, self.latitude) / 2
+                p = self.picture.path(self.spiral.radial(d, 0.5 - l, 0.5 + l))
             else:
                 p = self.picture.path(self.spiral.radial(d, 0.0, 1.0))
-            if d == date.today():
-                p.setAttribute('stroke-width', '4')
+            # if d == date.today():
+            #    p.setAttribute('stroke-width', '4')
             f.appendChild(p)
 
             # If this day is a Monday, label its day within the month.
@@ -344,11 +375,12 @@ topDate = date(year,1,1)
 yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
 startDate = date(2012, 9, 1)
 endDate =   date(2013, 9, 1)
+latitude = 45 # Portland, OR
 picture.root.appendChild(Calendar(picture,
                                   Spiral(center=center,
                                          topDate = topDate, nextTopDate = topDate + yearLength,
                                          topRadius = 550, nextTopRadius = 675, thickness = 70),
-                                  startDate, endDate)
+                                  startDate, endDate, latitude)
                          .element());
 
 with open('calendar.svg', 'w') as f:
