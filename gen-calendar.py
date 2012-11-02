@@ -109,8 +109,8 @@ class SVGPicture(object):
 # "horizontal" lines on the spiral.
 #
 # This class provides methods for computing path commands, but we stay out
-# of the business of actually constructing nodes. (Is that a meaningful
-# division of labor?)
+# of the business of actually constructing nodes. It does not use any
+# SVGPicture object. (Is that a meaningful division of labor?)
 class Spiral(object):
     def __init__(self, center, topDate, nextTopDate, topRadius, nextTopRadius, thickness):
         self.center = center
@@ -183,6 +183,7 @@ class Calendar(object):
         self.spiral = spiral
         self.startDate = startDate
         self.endDate = endDate
+        self.nextId = 0
 
     def element(self):
         g = self.picture.group()
@@ -195,9 +196,9 @@ class Calendar(object):
     @classmethod
     def nextMonth(self, date):
         if date.month < 12:
-            return date.replace(month=date.month + 1)
+            return date.replace(month=date.month + 1, day=1)
         else:
-            return date.replace(year=date.year + 1, month=1)
+            return date.replace(year=date.year + 1, month=1, day=1)
 
     # Yield (start, end) pairs for each month that overlaps the period
     # starting at |start| and ending at |end|. Clip the pairs to lie within
@@ -221,39 +222,53 @@ class Calendar(object):
             gray = not gray
         return g
 
+    def freshId(self, prefix):
+        self.nextId = self.nextId + 1
+        return "%s-%d" % (prefix, self.nextId)
+
+    # Build a label on a spiral. Display |text| on a path from |start| to
+    # |end| at |radius|. Add the path as a child of |defs|, and add
+    # the label itself as a child of |labels|.
+    def spiralLabel(self, text, start, end, radius, defs, labels):
+        id = self.freshId('spiralLabelPath')
+
+        # First, the path. Give these lines stroke and stroke width, even
+        # though they're in a 'defs'; we occasionally like to see them for
+        # debugging.
+        p = self.picture.path(self.spiral.moveTo(start, radius)
+                              + self.spiral.segment(start, end, radius),
+                              id=id, stroke='black', fill='none')
+        p.setAttribute('stroke-width', '4')
+
+        # Then, the label text.
+        tp = self.picture.textPath(text)
+        tp.setAttribute('xlink:href', '#' + id)
+        t = self.picture.text(None)
+        t.appendChild(tp)
+
+        defs.appendChild(p)
+        labels.appendChild(t)
+
     # Labels for the months.
     def monthLabels(self):
         g = self.picture.group(fill='rgb(190,190,190)')
         g.setAttribute('font-size', "40")
 
-        def monthId(date, prefix=""):
-            return "%smonth-%d-%d" % (prefix, date.year, date.month)
-
-        # Create paths for each month's label to follow.
         d = self.picture.defs()
-        for (start, end) in Calendar.months(self.startDate, self.endDate):
-            # Stretch out the interval to cover the whole month's span. Use
-            # day numbers acceptable in all months.
-            start = start.replace(day=5)
-            end = end.replace(day=28)
-            # Give these lines stroke and stroke width, even though they're
-            # in a 'defs'; we occasionally like to see them for debugging.
-            p = self.picture.path(self.spiral.moveTo(start, 1.2)
-                                  + self.spiral.segment(start, end, 1.2),
-                                  id=monthId(start), stroke='black', fill='none')
-            p.setAttribute('stroke-width', '4')
-            d.appendChild(p)
-
         g.appendChild(d)
 
-        # Create the month labels.
+        doneYear = None
         for (start, end) in Calendar.months(self.startDate, self.endDate):
-            text = start.strftime("%B %Y" if start.month == 1 else "%B")
-            tp = self.picture.textPath(text)
-            tp.setAttribute('xlink:href', monthId(start, "#"))
-            t = self.picture.text(None)
-            t.appendChild(tp)
-            g.appendChild(t)
+            # Month label. Stretch out the interval to cover the whole
+            # month's span. Use day numbers acceptable in all months.
+            start = start.replace(day=3)
+            end = start.replace(day=28)
+            self.spiralLabel(start.strftime("%B"), start, end, 1.2, d, g)
+
+            # Year label.
+            if start.year != doneYear:
+                doneYear = start.year
+                self.spiralLabel(start.strftime('%Y'), start, end, -0.6, d, g)
 
         return g
 
@@ -327,8 +342,8 @@ picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='no
 year = 2013
 topDate = date(year,1,1)
 yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
-startDate = date(2012, 8, 27)
-endDate =   date(2013, 9, 2)
+startDate = date(2012, 9, 1)
+endDate =   date(2013, 9, 1)
 picture.root.appendChild(Calendar(picture,
                                   Spiral(center=center,
                                          topDate = topDate, nextTopDate = topDate + yearLength,
