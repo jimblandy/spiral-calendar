@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<!DOCTYPE svg
+  PUBLIC '-//W3C//DTD SVG 1.1//EN'
+  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>
+<svg height="18in" version="1.1" viewBox="0 0 1296 1296" width="18in" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect fill="white" height="1296" stroke="none" width="1296" x="0" y="0"/>
+  <g>
+    <g fill="none" stroke="black" stroke-width="4">
+      <path d="M 648.0 298.0 A 350.0 350.0 0 0 1 921.6 429.8 L 1078.0 305.1 A 550.0 550.0 0 0 0 648.0 98.0 Z"/>
+      <path d="M 921.6 429.8 A 350.0 350.0 0 0 1 989.2 725.9 L 1184.2 770.4 A 550.0 550.0 0 0 0 1078.0 305.1 Z"/>
+      <path d="M 989.2 725.9 A 350.0 350.0 0 0 1 799.9 963.3 L 886.6 1143.5 A 550.0 550.0 0 0 0 1184.2 770.4 Z"/>
+      <path d="M 799.9 963.3 A 350.0 350.0 0 0 1 496.1 963.3 L 409.4 1143.5 A 550.0 550.0 0 0 0 886.6 1143.5 Z"/>
+      <path d="M 496.1 963.3 A 350.0 350.0 0 0 1 306.8 725.9 L 111.8 770.4 A 550.0 550.0 0 0 0 409.4 1143.5 Z"/>
+      <path d="M 306.8 725.9 A 350.0 350.0 0 0 1 374.4 429.8 L 218.0 305.1 A 550.0 550.0 0 0 0 111.8 770.4 Z"/>
+      <path d="M 374.4 429.8 A 350.0 350.0 0 0 1 648.0 298.0 L 648.0 98.0 A 550.0 550.0 0 0 0 218.0 305.1 Z"/>
+    </g>
+    <g fill="rgb(220,220,220)">
+      <defs>
+        <path d="M 664.6 278.4 A 370.0 370.0 0 0 1 937.3 417.3" fill="none" id="arcLabelPath-1" stroke="black" stroke-width="4"/>
+        <path d="M 666.7 232.4 A 416.0 416.0 0 0 1 973.2 388.6" fill="none" id="arcLabelPath-2" stroke="black" stroke-width="4"/>
+        <path d="M 660.7 178.2 A 470.0 470.0 0 0 1 1015.5 355.0" fill="none" id="arcLabelPath-3" stroke="black" stroke-width="4"/>
+        <path d="M 947.3 430.5 A 370.0 370.0 0 0 1 1008.7 730.3" fill="none" id="arcLabelPath-4" stroke="black" stroke-width="4"/>
+        <path d="M 984.6 403.5 A 416.0 416.0 0 0 1 1053.6 740.6" fill="none" id="arcLabelPath-5" stroke="black" stroke-width="4"/>
+        <path d="M 1023.2 365.0 A 470.0 470.0 0 0 1 1106.2 752.6" fill="none" id="arcLabelPath-6" stroke="black" stroke-width="4"/>
+        <path d="M 1004.7 746.4 A 370.0 370.0 0 0 1 808.5 981.4" fill="none" id="arcLabelPath-7" stroke="black" stroke-width="4"/>
+        <path d="M 1049.0 758.7 A 416.0 416.0 0 0 1 828.5 1022.8" fill="none" id="arcLabelPath-8" stroke="black" stroke-width="4"/>
+        <path d="M 1103.2 764.9 A 470.0 470.0 0 0 1 851.9 1071.5" fill="none" id="arcLabelPath-9" stroke="black" stroke-width="4"/>
+        <path d="M 793.4 988.2 A 370.0 370.0 0 0 1 487.5 981.4" fill="none" id="arcLabelPath-10" stroke="black" stroke-width="4"/>
+        <path d="M 811.5 1030.5 A 416.0 416.0 0 0 1 467.5 1022.8" fill="none" id="arcLabelPath-11" stroke="black" stroke-width="4"/>
+        <path d="M 840.5 1076.8 A 470.0 470.0 0 0 1 444.1 1071.5" fill="none" id="arcLabelPath-12" stroke="black" stroke-width="4"/>
+        <path d="M 472.7 973.8 A 370.0 370.0 0 0 1 287.3 730.3" fill="none" id="arcLabelPath-13" stroke="black" stroke-width="4"/>
+        <path d="M 450.9 1014.3 A 416.0 416.0 0 0 1 242.4 740.6" fill="none" id="arcLabelPath-14" stroke="black" stroke-width="4"/>
+        <path d="M 432.7 1065.8 A 470.0 470.0 0 0 1 189.8 752.6" fill="none" id="arcLabelPath-15" stroke="black" stroke-width="4"/>
+        <path d="M 283.9 714.1 A 370.0 370.0 0 0 1 358.7 417.3" fill="none" id="arcLabelPath-16" stroke="black" stroke-width="4"/>
+        <path d="M 238.7 722.3 A 416.0 416.0 0 0 1 322.8 388.6" fill="none" id="arcLabelPath-17" stroke="black" stroke-width="4"/>
+        <path d="M 187.1 740.2 A 470.0 470.0 0 0 1 280.5 355.0" fill="none" id="arcLabelPath-18" stroke="black" stroke-width="4"/>
+        <path d="M 369.4 404.6 A 370.0 370.0 0 0 1 648.0 278.0" fill="none" id="arcLabelPath-19" stroke="black" stroke-width="4"/>
+        <path d="M 334.7 374.3 A 416.0 416.0 0 0 1 648.0 232.0" fill="none" id="arcLabelPath-20" stroke="black" stroke-width="4"/>
+        <path d="M 288.6 345.2 A 470.0 470.0 0 0 1 648.0 178.0" fill="none" id="arcLabelPath-21" stroke="black" stroke-width="4"/>
+      </defs>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-1">Monday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-2">げつようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-3">月</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-4">Tuesday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-5">かようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-6">火</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-7">Wednesday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-8">すいようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-9">水</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-10">Thursday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-11">もくようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-12">木</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-13">Friday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-14">きんようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-15">金</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-16">Saturday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-17">どようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-18">土</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-19">Sunday</textPath>
+      </text>
+      <text font-size="40">
+        <textPath xlink:href="#arcLabelPath-20">にちようび</textPath>
+      </text>
+      <text font-size="80">
+        <textPath xlink:href="#arcLabelPath-21">日</textPath>
+      </text>
+    </g>
+  </g>
+</svg>
+

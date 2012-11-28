@@ -92,7 +92,7 @@ class SVGPicture(object):
 
     def textPath(self, content, **attributes):
         tp = self.doc.createElement('textPath')
-        tp.appendChild(self.doc.createTextNode(str(content)))
+        tp.appendChild(self.doc.createTextNode(unicode(content)))
         setAttributes(tp, **attributes)
         return tp
 
@@ -359,30 +359,32 @@ class Calendar(object):
 
         return f
 
-# Dimensions of the page, in inches
-pageSizeInches = ('24in', '24in')
-pageSize = (1728, 1728)
-center = (pageSize[0]/2, pageSize[1]/2)
+if __name__ == "__main__":
 
-# The whole picture.
-picture = SVGPicture(pageSizeInches, pageSize)
+    # Dimensions of the page, in inches
+    pageSizeInches = ('24in', '24in')
+    pageSize = (1728, 1728)
+    center = (pageSize[0]/2, pageSize[1]/2)
 
-# Background.
-picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='none'))
+    # The whole picture.
+    picture = SVGPicture(pageSizeInches, pageSize)
 
-year = 2013
-topDate = date(year,1,1)
-yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
-startDate = date(2012, 9, 1)
-endDate =   date(2013, 9, 1)
-latitude = 45 # Portland, OR
-picture.root.appendChild(Calendar(picture,
-                                  Spiral(center=center,
-                                         topDate = topDate, nextTopDate = topDate + yearLength,
-                                         topRadius = 550, nextTopRadius = 675, thickness = 70),
-                                  startDate, endDate, latitude)
-                         .element());
+    # Background.
+    picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='none'))
 
-with open('calendar.svg', 'w') as f:
-    picture.doc.writexml(f, addindent='  ', newl='\n')
-    print >> f
+    year = 2013
+    topDate = date(year,1,1)
+    yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
+    startDate = date(2012, 9, 1)
+    endDate =   date(2013, 9, 1)
+    latitude = 45 # Portland, OR
+    picture.root.appendChild(Calendar(picture,
+                                      Spiral(center=center,
+                                             topDate = topDate, nextTopDate = topDate + yearLength,
+                                             topRadius = 550, nextTopRadius = 675, thickness = 70),
+                                      startDate, endDate, latitude)
+                             .element());
+
+    with open('calendar.svg', 'w') as f:
+        picture.doc.writexml(f, addindent='  ', newl='\n')
+        print >> f
