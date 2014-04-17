@@ -354,6 +354,8 @@ class Calendar(object):
                 tp = self.picture.textPath(" %d" % (d.day,))
                 tp.setAttribute('xlink:href', weekId(d, '#'))
                 t = self.picture.text(None)
+                t.setAttribute('fill', 'black')
+                t.setAttribute('stroke', 'none')
                 t.appendChild(tp)
                 f.appendChild(t)
 
