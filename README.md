@@ -9,6 +9,8 @@ ordering, and the spiral aspect emphasizes the cycle of the year.
 I like to print these out, laminate them, and then let the kids write on them
 with dry-erase markers.
 
+![example calendar](example.png)
+
 ## Running the script
 
 Running 'python gen_calendar.py' writes the calendar to 'calendar.svg' in
