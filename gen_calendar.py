@@ -365,7 +365,7 @@ if __name__ == "__main__":
 
     # Dimensions of the page, in inches
     pageSizeInches = ('24in', '24in')
-    pageSize = (1728, 1728)
+    pageSize = (24 * 72, 24 * 72)
     center = (pageSize[0]/2, pageSize[1]/2)
 
     # The whole picture.
@@ -374,16 +374,16 @@ if __name__ == "__main__":
     # Background.
     picture.root.appendChild(picture.rect((0, 0), pageSize, fill='white', stroke='none'))
 
-    year = 2013
+    year = 2018
     topDate = date(year,1,1)
     yearLength = timedelta(365 + (1.0/4) - (1.0/100) + (1.0/400))
-    startDate = date(2012, 9, 1)
-    endDate =   date(2013, 9, 1)
+    startDate = date(2018, 6, 1)
+    endDate =   date(2019, 5, 31)
     latitude = 45 # Portland, OR
     picture.root.appendChild(Calendar(picture,
                                       Spiral(center=center,
                                              topDate = topDate, nextTopDate = topDate + yearLength,
-                                             topRadius = 550, nextTopRadius = 675, thickness = 70),
+                                             topRadius = 475, nextTopRadius = 600, thickness = 70),
                                       startDate, endDate, latitude)
                              .element());
 
