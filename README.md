@@ -13,6 +13,9 @@ with dry-erase markers.
 
 ## Running the script
 
+This is written in Python 2. If you get syntax errors, you may be trying to run
+it as Python 3. If you'd like to port it, post a pull request!
+
 Running 'python gen_calendar.py' writes the calendar to 'calendar.svg' in
 the current directory.
 
